@@ -1,0 +1,9 @@
+Modernes Perl fuer das moderne Web: in diesem Vortrag schauen wir uns zunaechst kurz Tim Berners-Lees Vision von der Zukunft des Netzes an, das Semantic Web. Der wichtigste Baustein des Semantic Web ist das Datenformat RDF.
+
+Dann wird's praktischer: wir sehen, wie man mit RDF::Trine und RDF::Query RDF lesen, serialisieren, speichern, und abfragen kann. Dabei machen wir immer wieder kurze Ausfluege in die Grundlagen des Semantic Web, und lernen so beispielsweise die RDF-Abfragesprache SPARQL kennen. Wir werden zwischen den verschiedenen Serialisierungen von RDF konvertieren (und sehen, warum es die ueberhaupt gibt).
+
+Schliesslich werden wir in einem kleinen praktischen Beispiel RDF aus dem Netz in eine Datenbank laden und ein kleines Werkzeug zum bequemen Abfragen des Selben bauen.  Dies alles ist bequem mit vorhandenen CPAN-Modulen machbar.
+
+Je nach Bedarf kann der Vortrag mehr Grundlagen oder mehr Code zeigen. Auch die Frage, wozu das alles eigentlich gut ist (und wozu nicht), sollte nicht zu kurz kommen.
+
+Der Vortragende ist Entwickler am Swiss Institute of Bioinformatics in Genf, wo er mit Perl und Java Werkzeuge fuer Biologen entwickelt. Er hat zuletzt im Februar am dritten Biohackathon in Tokyo an RDF in Perl gearbeitet.
