@@ -26,7 +26,8 @@ ist bequem mit vorhandenen CPAN-Modulen machbar.
 
 ## Vortrag
 
-Die Folien und Verweise zu Code sind auf [Github]().
+Die Folien und Verweise zu Code sind auf
+[Github](http://github.com/thomas11/perl-rdf-talk).
 
 
 ## Links
