@@ -1,0 +1,4 @@
+<http://purl.uniprot.org/uniprot/P12345> <http://purl.uniprot.org/core/created> "1989-10-01" ;
+	<http://purl.uniprot.org/core/enzyme> <http://purl.uniprot.org/enzyme/2.6.1.1> ;
+	a <http://purl.uniprot.org/core/Protein> .
+

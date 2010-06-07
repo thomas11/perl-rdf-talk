@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rdf:RDF xmlns="http://purl.uniprot.org/core/"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:Description rdf:about="http://purl.uniprot.org/uniprot/P12345">
+<rdf:type rdf:resource="http://purl.uniprot.org/core/Protein" />
+<created>1989-10-01</created>
+<enzyme rdf:resource="http://purl.uniprot.org/enzyme/2.6.1.1" />
+</rdf:Description>
+</rdf:RDF>
