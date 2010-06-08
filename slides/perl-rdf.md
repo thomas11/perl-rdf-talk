@@ -112,15 +112,13 @@ Richard Cyganiak und Anja Jentzsch, CC by-sa
 
 # Was bringt's?
 
-*Ersparnis*.
+*Spart Arbeit.*
 
-  - XML: Parser.
-  - XML Schema: Serialisierung.
-  
+  - Datenmodell durch explizite Semantik.
+  - Integration durch globale URLs.
+
 <div style="font-size: 125%;">
-  - RDF:
-    - Datenmodell durch explizite Semantik.
-    - Integration durch globale URLs.
+Ergebnis: globales, dezentrales Data Warehouse.
 </div>
 
 <div style="font-size: 75%; text-align: right">
