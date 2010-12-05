@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>Praktisches RDF in Perl</title>
+  <title>RDF und Perl</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Thomas Kappler" />
@@ -66,7 +66,7 @@
   
   /* Following are the presentation styles -- edit away! */
   
-  body {background: #FFF; color: #000; font-size: 2em;}
+  body {background: #FFF url(bodybg.gif) -16px 0 no-repeat; color: #000; font-size: 2em;}
   :link, :visited {text-decoration: none; color: #00C;}
   #controls :active {color: #88A !important;}
   #controls :focus {outline: 1px dotted #227;}
@@ -84,37 +84,48 @@
   kbd {font-weight: bold; font-size: 1em;}
   sup {font-size: smaller; line-height: 1px;}
   
-  .slide code {padding: 2px 0.25em; font-weight: bold; color: #533;}
+  .slide code {padding: 2px 0.25em; line-height: 110%; font-weight: bold; color: #575757;}
   .slide code.bad, code del {color: red;}
   .slide code.old {color: silver;}
-  .slide pre {padding: 0; margin: 0.25em 0 0.5em 0.5em; color: #533; font-size: 90%;}
+  .slide pre {padding: 0; margin: 0.5em 0 0.5em 0.5em; color: #533; font-size: 95%;}
   .slide pre code {display: block;}
   .slide ul {margin-left: 5%; margin-right: 7%; list-style: disc;}
   .slide li {margin-top: 0.75em; margin-right: 0;}
   .slide ul ul {line-height: 1;}
-  .slide ul ul li {margin: .2em; font-size: 95%; list-style: square;}
+  .slide ul ul li {margin: .2em; font-size: 85%; list-style: square;}
   .slide img.leader {display: block; margin: 0 auto;}
   
-  div#header, div#footer {background: #005; color: #AAB;
+  div#header, div#footer {color: #AAB;
     font-family: Verdana, Helvetica, sans-serif;}
-  div#header {background: #005;
-    line-height: 1px;}
-  div#footer {font-size: 0.5em; font-weight: bold; padding: 1em 0;}
-  #footer h1, #footer h2 {display: block; padding: 0 1em;}
-  #footer h2 {font-style: italic;}
+  div#header {line-height: 1px;}
+  div#footer {background: #005, font-size: 0.5em; font-weight: bold; padding: 1em 0;}
+  #footer h1 {display: none;}
+  #footer h2 {display: block; padding: 0 1em; position: absolute; bottom: 0.3em;
+             font-style: italic; font-size: /*66%*/ 0.7em;}
+  
+  /* This is the k/n slide counter. Make it look like the presentation
+  title in the footer, so the whole bottom part of the slide has a
+  uniform look. */
+  #currentSlide {
+      position: absolute; bottom: 0.3em;
+      font-size: 0.7em; color: #AAB; font-style: italic; font-weight: bold;
+  }
+  
+  .title {display: none;}
   
   div.long {font-size: 0.75em;}
-  .slide h1 {position: absolute; top: 0.7em; left: 87px; z-index: 1;
+  .slide h1 {position: absolute; top: 0.4em; left: 87px; z-index: 1;
     margin: 0; padding: 0.3em 0 0 50px; white-space: nowrap;
     font: bold 150%/1em Helvetica, sans-serif; text-transform: capitalize;
-    color: #DDE; background: #005;}
+    /* color: #DDE; */
+            }
   .slide h3 {font-size: 130%;}
   h1 abbr {font-variant: small-caps;}
   
   div#controls {position: absolute; left: 50%; bottom: 0;
     width: 50%;
     text-align: right; font: bold 0.9em Verdana, Helvetica, sans-serif;}
-  html>body div#controls {position: fixed; padding: 0 0 1em 0;
+  html>body div#controls {position: fixed; padding: 0 0 0.3em 0;
     top: auto;}
   div#controls form {position: absolute; bottom: 0; right: 0; width: 100%;
     margin: 0; padding: 0;}
@@ -123,8 +134,6 @@
     cursor: pointer;}
   #controls #navList {height: 1em;}
   #controls #navList #jumplist {position: absolute; bottom: 0; right: 0; background: #DDD; color: #227;}
-  
-  #currentSlide {text-align: center; font-size: 0.5em; color: #449;}
   
   #slide0 {padding-top: 3.5em; font-size: 90%;}
   #slide0 h1 {position: static; margin: 1em 0 0; padding: 0;
@@ -141,15 +150,16 @@
   html>body .external {border-bottom: none;}
   .external:after {content: " \274F"; font-size: smaller; color: #77B;}
   
-  .incremental, .incremental *, .incremental *:after {color: #DDE; visibility: visible;}
+  /* .incremental, .incremental *, .incremental *:after {color: #DDE; visibility: visible;} */
+  .incremental, .incremental *, .incremental *:after {visibility: hidden;}
   img.incremental {visibility: hidden;}
-  .slide .current {color: #B02;}
-  
+  /* .slide .current {color: #B02;} */
   
   /* diagnostics
   
   li:after {content: " [" attr(class) "]"; color: #F88;}
-   */
+  */
+  
   </style>
   <style type="text/css" media="projection" id="operaFix">
   /* DO NOT CHANGE THESE unless you really want to break Opera Show */
@@ -180,7 +190,31 @@
   
   </style>
   <style type="text/css" media="print" id="slidePrint">
-  /* The following rule is necessary to have all slides appear in print! DO NOT REMOVE IT! */.slide, ul {page-break-inside: avoid; visibility: visible !important;}h1 {page-break-after: avoid;}body {font-size: 12pt; background: white;}* {color: black;}#slide0 h1 {font-size: 200%; border: none; margin: 0.5em 0 0.25em;}#slide0 h3 {margin: 0; padding: 0;}#slide0 h4 {margin: 0 0 0.5em; padding: 0;}#slide0 {margin-bottom: 3em;}h1 {border-top: 2pt solid gray; border-bottom: 1px dotted silver;}.extra {background: transparent !important;}div.extra, pre.extra, .example {font-size: 10pt; color: #333;}ul.extra a {font-weight: bold;}p.example {display: none;}#header {display: none;}#footer h1 {margin: 0; border-bottom: 1px solid; color: gray; font-style: italic;}#footer h2, #controls {display: none;}/* The following rule keeps the layout stuff out of print.  Remove at your own risk! */.layout, .layout * {display: none !important;}
+  /* The following rule is necessary to have all slides appear in print! DO NOT REMOVE IT! */
+  .slide, ul {page-break-inside: avoid; visibility: visible !important;}
+  h1 {page-break-after: avoid;}
+  
+  body {font-size: 12pt; background: white;}
+  * {color: black;}
+  
+  #slide0 h1 {font-size: 200%; border: none; margin: 0.5em 0 0.25em;}
+  #slide0 h3 {margin: 0; padding: 0;}
+  #slide0 h4 {margin: 0 0 0.5em; padding: 0;}
+  #slide0 {margin-bottom: 3em;}
+  
+  h1 {border-top: 2pt solid gray; border-bottom: 1px dotted silver;}
+  .extra {background: transparent !important;}
+  div.extra, pre.extra, .example {font-size: 10pt; color: #333;}
+  ul.extra a {font-weight: bold;}
+  p.example {display: none;}
+  
+  #header {display: none;}
+  #footer h1 {margin: 0; border-bottom: 1px solid; color: gray; font-style: italic;}
+  #footer h2, #controls {display: none;}
+  
+  /* The following rule keeps the layout stuff out of print.  Remove at your own risk! */
+  .layout, .layout * {display: none !important;}
+  
   </style>
   <script type="text/javascript">
   // S5 v1.1 slides.js -- released into the Public Domain
@@ -264,7 +298,7 @@
   </script>
 </head>
 <body>
-<h1 class="title">Praktisches RDF in Perl</h1>
+<h1 class="title">RDF und Perl</h1>
 <div class="layout">
 <div id="controls"></div>
 <div id="currentSlide"></div>
@@ -273,14 +307,14 @@
 <h1
 >2010-06-08</h1
 ><h2
->Praktisches RDF in Perl</h2
+>RDF und Perl</h2
 ></div>
 </div>
 <div class="presentation">
 
 <div class="slide">
 <h1
->Praktisches RDF in Perl</h1
+>RDF und Perl</h1
 ><h3
 >Thomas Kappler</h3
 ><h4
@@ -292,10 +326,6 @@
 ><div style='float: right'><img src="img/sib_logo_official.jpg" width="250" /> <br /> <img src="img/uniprot.png" width="250" style="padding-top: 20px" /></div>
 <p
 >Thomas Kappler</p
-><p
->Swiss Institute of Bioinformatics, Genf</p
-><p
->Java, Emacs, ... Und jetzt neu: Perl</p
 ><p
 >http://jugglingbits.wordpress.com</p
 ></div>
@@ -310,18 +340,19 @@
     ><li
       >Text</li
       ><li
-      >Datenbanken</li
+      >Datenbanken<!--  4. Weitere Codebeispiele -->
+</li
       ></ol
     ></li
-  ><li
-  >Weitere Codebeispiele</li
   ></ol
-><table>
+><!--
+<table>
 <tr> <td>Dieser Vortrag:</td>
      <td>http://github.com/thomas11/perl-rdf-talk</td> </tr>
 <tr> <td>Code:</td>
      <td>http://github.com/thomas11/perl-rdf-experiments</td> </tr>
 </table>
+-->
 
 </div>
 <div class="slide">
@@ -341,12 +372,19 @@
 ></div>
 <div class="slide">
 <h1
+>Semantic Web?</h1
+><p
+>Ontologien, Reasoning, ...</p
+><p
+>Aber RDF allein ist voellig ausreichend!</p
+></div>
+<div class="slide">
+<h1
 >RDF</h1
 ><div style='float: right'><img src="img/rdf_logo_200.png"
  /></div>
-<p
->Semantic Web? Erst mal reicht RDF für uns Programmierer.</p
-><div style="font-size: 125%; padding: 1em 0 1em 0;">Generisches Modell für Daten im Web.</div>
+
+<div style="font-size: 125%; padding: 1em 0 1em 0;">Generisches Modell für Daten im Web.</div>
 
 </div>
 <div class="slide">
@@ -356,11 +394,11 @@
 <tr> <td>Dinge beschreiben:</td>
      <td><span style="font-size: 125%;">Subject—Property—Object</span></td>
      <td>.</td> </tr>
-<tr class="incremental"> <td>Diese</td>
+<tr class="incremental"> <td></td>
      <td style="text-align: center"><span style="font-size: 125%;"><strong
 >Tripel</strong
 ></span></td>
-     <td> sind universal.</td> </tr>
+     <td></td> </tr>
 <tr> <td colspan="2"> </td> </tr>
 </table>
 
@@ -377,11 +415,11 @@
 <tr> <td>Dinge beschreiben:</td>
      <td><span style="font-size: 125%;">Subject—Property—Object</span></td>
      <td>.</td> </tr>
-<tr> <td>Diese</td>
+<tr> <td></td>
      <td style="text-align: center"><span style="font-size: 125%;"><strong
 >Tripel</strong
 ></span></td>
-     <td> sind universal.</td> </tr>
+     <td></td> </tr>
 <tr> <td colspan="2">Globale Adressierung mit <strong
 >URIs</strong
 >.</td> </tr>
@@ -397,28 +435,75 @@
 </div>
 <div class="slide">
 <h1
->Linked Open Data</h1
+>Linked (Open) Data</h1
 ><!-- ![](img/lod-cloud-cropped.png) --><img src="img/lod-cloud-cropped.png" width="550" /><div style="font-size: 75%; float: right">Richard Cyganiak und Anja Jentzsch, CC by-sa</div>
 
 </div>
 <div class="slide">
 <h1
+>Linked (Open) Data</h1
+><p
+>Linked Data ⋍ Web of Data ⋍ Semantic Web</p
+><p
+>&quot;The Semantic Web isn't just about putting data on the web. It is about making links, so that a person or machine can explore the web of data.&quot; (Tim Berners-Lee, http://www.w3.org/DesignIssues/LinkedData.html)</p
+><p
+>Silos öffnen.</p
+></div>
+<div class="slide">
+<h1
+>Linked (Open) Data</h1
+><ol style="list-style-type: decimal;"
+><li
+  >Use URIs as names for things.</li
+  ><li
+  >Use HTTP URIs so that people can look up those names.</li
+  ><li
+  >When someone looks up a URI, provide useful information, using the standards (RDF*, SPARQL)</li
+  ><li
+  >Include links to other URIs. so that they can discover more things.</li
+  ></ol
+><p style="font-size: 75%; text-align: right;">(http://www.w3.org/DesignIssues/LinkedData.html)</p>
+<p
+>“Linked Data is the Semantic Web done right” (Tim Berners-Lee)</p
+></div>
+<div class="slide">
+<h1
 >Was bringt's?</h1
 ><p
 ><em
-  >Ersparnis</em
-  >.</p
+  >Spart Arbeit.</em
+  ></p
 ><ul
 ><li
   >Datenmodell durch explizite Semantik.</li
   ><li
   >Integration durch globale URLs.</li
   ></ul
-><div style="font-size: 125%;">Ergebnis: globales, dezentrales Data Warehouse.</div>
+><div class="incremental">
+<div style="font-size: 125%; padding-top: 1em;">Ergebnis: globales, dezentrales Data Warehouse.</div>
 
 <div style="font-size: 75%; text-align: right">(frei nach Paul Gordon, Biohackathon Mailing List)</div>
+</div>
+
+<div class="incremental" style="padding-top: 1em;">Im Idealfall: neue Information <em
+>entdecken</em
+>.</div>
 
 </div>
+<div class="slide">
+<h1
+>Beispiele</h1
+><p
+>Bioinformatik: www.uniprot.org</p
+><p
+>Open Government: www.data.gov</p
+><p
+>Noch nicht besonders &quot;Linked&quot;—die grosse Herausforderung.</p
+></div>
+<div class="slide">
+<h1
+>Mit RDF arbeiten</h1
+><img src="img/perl-rdf-overview-800.jpg" width="700" /></div>
 <div class="slide">
 <h1
 >Serialisierung</h1
@@ -542,11 +627,7 @@
 ></div>
 <div class="slide">
 <h1
->Mit RDF arbeiten</h1
-><img src="img/perl-rdf-overview-800.jpg" width="700" /></div>
-<div class="slide">
-<h1
->Mit RDF arbeiten</h1
+>RDF::Trine</h1
 ><div style="font-size: 125%; padding: 1em 0 1em 0;"><strong
 >RDF::Trine</strong
 >: &quot;An RDF Framework for Perl&quot;<br
@@ -564,10 +645,7 @@
 >Parser und Serialisierer</h1
 ><pre class="sourceCode Perl"
 ><code
-  ><span class="Comment"
-    >## use File::Slurp, Getopt::Std, strict etc.</span
-    ><br
-     /><span class="Keyword"
+  ><span class="Keyword"
     >use</span
     ><span class="Normal NormalText"
     > </span
@@ -577,7 +655,7 @@
     >;</span
     ><br
      /><span class="Comment"
-    ># use RDF::Trine:: etc.;</span
+    ># use RDF::Trine::Store etc.;</span
     ><br
      /><br
      /><span class="Keyword"
@@ -639,10 +717,10 @@
     ><span class="Normal NormalText"
     >);</span
     ><br
-     /><br
      /><span class="Comment"
-    >## getopts, $file from ARGV etc.</span
+    ># my $model  = RDF::Trine::Model-&gt;temporary_model;</span
     ><br
+     /><br
      /><span class="Keyword"
     >my</span
     ><span class="Normal NormalText"
@@ -665,10 +743,6 @@
     >$in_format</span
     ><span class="Normal NormalText"
     >  = </span
-    ><span class="DataType DataType"
-    >$args</span
-    ><span class="Normal NormalText"
-    >{i} || </span
     ><span class="Keyword Operator"
     >'</span
     ><span class="String"
@@ -686,10 +760,6 @@
     >$out_format</span
     ><span class="Normal NormalText"
     > = </span
-    ><span class="DataType DataType"
-    >$args</span
-    ><span class="Normal NormalText"
-    >{o} || </span
     ><span class="Keyword Operator"
     >'</span
     ><span class="String"
@@ -753,10 +823,8 @@
     >);</span
     ><br
      /><br
-     /><span class="Function"
-    >warn</span
-    ><span class="Normal NormalText"
-    > </span
+     /><span class="Normal NormalText"
+    >say </span
     ><span class="Keyword Operator"
     >&quot;</span
     ><span class="String String(interpolated)"
@@ -777,15 +845,20 @@
     >&quot;</span
     ><span class="String String(interpolated)"
     > statements.</span
-    ><span class="Char StringSpecialCharacter"
-    >\n</span
     ><span class="Keyword Operator"
     >&quot;</span
     ><span class="Normal NormalText"
     >;</span
     ><br
-     /><br
-     /><span class="Keyword"
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Parser und Serialisierer</h1
+><pre class="sourceCode Perl"
+><code
+  ><span class="Keyword"
     >my</span
     ><span class="Normal NormalText"
     > </span
@@ -828,7 +901,7 @@
 ></div>
 <div class="slide">
 <h1
->Parser und Serializer</h1
+>Parser und Serialisierer</h1
 ><pre
 ><code
   >$ perl trine-roundtrip.pl -o turtle p12345.rdf
@@ -844,10 +917,79 @@ Read 3 statements.
 ></div>
 <div class="slide">
 <h1
+>as_hashref</h1
+><pre class="sourceCode Perl"
+><code
+  ><span class="Keyword"
+    >my</span
+    ><span class="Normal NormalText"
+    > </span
+    ><span class="DataType DataType"
+    >$model_h</span
+    ><span class="Normal NormalText"
+    > = </span
+    ><span class="DataType DataType"
+    >$model</span
+    ><span class="Normal NormalText"
+    >-&gt;</span
+    ><span class="DataType DataType"
+    >as_hashref</span
+    ><span class="Normal NormalText"
+    >;</span
+    ><br
+     /><span class="Function"
+    >print</span
+    ><span class="Normal NormalText"
+    > Dumper(</span
+    ><br
+     /><span class="Normal NormalText"
+    >    </span
+    ><span class="DataType DataType"
+    >$model_h</span
+    ><span class="Normal NormalText"
+    >-&gt;</span
+    ><span class="Normal NormalText"
+    >{</span
+    ><span class="DataType DataType"
+    >$uniprot_uri</span
+    ><span class="Normal NormalText"
+    >.</span
+    ><span class="Keyword Operator"
+    >'</span
+    ><span class="String"
+    >/uniprot/P12345</span
+    ><span class="Keyword Operator"
+    >'</span
+    ><span class="Normal NormalText"
+    >});</span
+    ><br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>as_hashref</h1
+><pre
+><code
+  >$VAR1 = { 'http://purl.uniprot.org/core/created' =&gt; [
+            {
+              'value' =&gt; '1989-10-01',
+              'type' =&gt; 'literal'
+            }
+          ],
+          'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' =&gt; [
+            {
+              'value' =&gt; 'http://purl.uniprot.org/core/Protein',
+              'type' =&gt; 'uri'
+            }
+          ],
+</code
+  ></pre
+></div>
+<div class="slide">
+<h1
 >Mehr als nur Dateien</h1
-><ul>
-  <li>Datenbank</li>
-    <ul>
+>Datenbanken<ul>
       <li><strong
 >Triple Stores</strong
 ></li>
@@ -855,12 +997,11 @@ Read 3 statements.
         <li>Alles, was einen Graph speichern kann.</li>
         <ul> <li>In-Memory</li> <li>SQL</li> <li>...</li></ul>
     </ul>
-<li>Abfragesprache: <strong
->SPARQL</strong
-></li>
-</ul>
-
-</div>
+<p
+>Abfragesprache: <strong
+  >SPARQL</strong
+  ></p
+></div>
 <div class="slide">
 <h1
 >SPARQL</h1
@@ -883,6 +1024,15 @@ where {
 }
 </code
   ></pre
+></div>
+<div class="slide">
+<h1
+>RDF::Query</h1
+><div style="font-size: 125%; padding: 1em 0 1em 0;"><strong
+>RDF::Query</strong
+>: &quot;An RDF query implementation of SPARQL/RDQL in Perl for use with RDF::Trine.&quot;</div>
+<p
+>von... Gregory Williams.</p
 ></div>
 <div class="slide">
 <h1
@@ -970,7 +1120,7 @@ where {
 <h1
 >RDF::Query</h1
 ><p
->Programmatisch: siehe Extras. Kostprobe:</p
+>Kostprobe programmatisch:</p
 ><pre class="sourceCode Perl"
 ><code
   ><span class="Keyword"
@@ -1051,8 +1201,8 @@ where {
 <div class="slide">
 <h1
 >Integration</h1
-><table cellspacing="20">
-  <tr> <td>Perl-Code</td>    <td>Graph &lt;-&gt; Hash</td>    <td>Trine::Model</td> </tr>
+><table cellspacing="30">
+  <tr> <td>Perl Code</td>    <td>Graph &lt;-&gt; Hash</td>    <td>Trine::Model</td> </tr>
   <tr> <td>Datenbank</td>    <td>Tripel relational</td> <td>Trine::Store</td> </tr>
   <tr> <td>Webanwendung</td> <td>JSON</td>              <td>Trine::{Serialiser,Parser}</td> </tr>
   <tr> <td></td>             <td>RDF bereitstellen</td> <td>Trine::{Serialiser,Parser}</td> </tr>
@@ -1081,7 +1231,7 @@ where {
 ><p
 >RDF mit Perl: voll unterstützt.</p
 ><p
->Extras kommen: Catalyst-Modell, RDF::LinkedData, XS.</p
+>In Arbeit: Catalyst-Modell, RDF::LinkedData, XS.</p
 ><p
 ><strong
   >The Perl RDF Project</strong
@@ -1092,6 +1242,7 @@ where {
 <tr> <td>Code:</td>
      <td>http://github.com/thomas11/perl-rdf-experiments</td> </tr>
 </table>
+
 </div>
 <div class="slide">
 <h1
@@ -1099,15 +1250,20 @@ where {
 ><p
 ><strong
   >Greg Williams</strong
-  >, Toby Inkster, Kjetil Kjernsmo et al.:<br
+  >, Kjetil Kjernsmo, Toby Inkster, et al.:<br
    /><em
   >The Perl RDF Project</em
   ></p
 ><p
 >Toshiaki Katayama, DBCLS, CBRC: Biohackathon Tokyo</p
-><p
->Swiss-Prot/SIB: mein Konferenzbesuch</p
-></div>
+><table>
+<tr> <td>Dieser Vortrag:</td>
+     <td>http://github.com/thomas11/perl-rdf-talk</td> </tr>
+<tr> <td>Code:</td>
+     <td>http://github.com/thomas11/perl-rdf-experiments</td> </tr>
+</table>
+
+</div>
 <div class="slide">
 <h1
 >Mehr Code: Übersicht</h1
@@ -1627,43 +1783,9 @@ where {
     ><span class="Function"
     >Model</span
     ><span class="Normal NormalText"
-    >-&gt;new(</span
+    >-&gt;temporary_model;</span
     ><br
-     /><span class="Normal NormalText"
-    >              </span
-    ><span class="Function"
-    >RDF::Trine</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Store</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Memory</span
-    ><span class="Normal NormalText"
-    >-&gt;new );</span
-    ><br
-     /><span class="Keyword"
-    >foreach</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$stmt</span
-    ><span class="Normal NormalText"
-    > (</span
-    ><span class="DataType DataType"
-    >@stmts</span
-    ><span class="Normal NormalText"
-    >) {</span
-    ><br
-     /><span class="Normal NormalText"
-    >    </span
-    ><span class="DataType DataType"
+     /><span class="DataType DataType"
     >$model</span
     ><span class="Normal NormalText"
     >-&gt;</span
@@ -1671,13 +1793,18 @@ where {
     >add_statement</span
     ><span class="Normal NormalText"
     >(</span
-    ><span class="DataType DataType"
-    >$stmt</span
+    ><span class="DataType SpecialVariable"
+    >$_</span
     ><span class="Normal NormalText"
-    >);</span
-    ><br
-     /><span class="Normal NormalText"
-    >}</span
+    >) </span
+    ><span class="Keyword"
+    >for</span
+    ><span class="Normal NormalText"
+    > </span
+    ><span class="DataType DataType"
+    >@stmts</span
+    ><span class="Normal NormalText"
+    >;</span
     ><br
      /><br
      /><span class="Keyword"
@@ -1698,15 +1825,11 @@ where {
     ><span class="Function"
     >Serializer</span
     ><span class="Normal NormalText"
-    >-&gt;new( </span
-    ><span class="Keyword Operator"
-    >'</span
-    ><span class="String"
-    >turtle</span
-    ><span class="Keyword Operator"
-    >'</span
+    >::</span
+    ><span class="Function"
+    >Turtle</span
     ><span class="Normal NormalText"
-    > );</span
+    >-&gt;new;</span
     ><br
      /><span class="Function"
     >print</span
@@ -1749,736 +1872,111 @@ where {
 a &lt;http://purl.uniprot.org/core/Protein&gt; .
 </code
   ></pre
-></div>
-<div class="slide">
-<h1
->SPARQL programmatisch</h1
-><ol style="list-style-type: decimal;"
-><li
-  >Basic Graph Pattern</li
-  ><li
-  >Group Graph Pattern</li
-  ><li
-  >Project</li
-  ><li
-  >Query</li
-  ></ol
-><p
->http://github.com/thomas11/perl-rdf-experiments/<br
-   />-&gt; make_a_sparql_query.pl</p
-></div>
-<div class="slide">
-<h1
->SPARQL programmatisch: plumbing</h1
-><pre class="sourceCode Perl"
-><code
-  ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$BASE</span
-    ><span class="Normal NormalText"
-    >    = </span
-    ><span class="Keyword Operator"
-    >'</span
-    ><span class="String"
-    >http://purl.uniprot.org/</span
-    ><span class="Keyword Operator"
-    >'</span
-    ><span class="Normal NormalText"
-    >;</span
-    ><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$UNIPROT</span
-    ><span class="Normal NormalText"
-    > = </span
-    ><span class="Function"
-    >RDF::Trine</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Namespace</span
-    ><span class="Normal NormalText"
-    >-&gt;new(</span
-    ><span class="Keyword Operator"
-    >'</span
-    ><span class="String"
-    >http://purl.uniprot.org/core/</span
-    ><span class="Keyword Operator"
-    >'</span
-    ><span class="Normal NormalText"
-    >);</span
-    ><br
-     /><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$store</span
-    ><span class="Normal NormalText"
-    >   = </span
-    ><span class="Function"
-    >RDF::Trine</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Store</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Memory</span
-    ><span class="Normal NormalText"
-    >-&gt;new;</span
-    ><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$model</span
-    ><span class="Normal NormalText"
-    >   = </span
-    ><span class="Function"
-    >RDF::Trine</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Model</span
-    ><span class="Normal NormalText"
-    >-&gt;new(</span
-    ><span class="DataType DataType"
-    >$store</span
-    ><span class="Normal NormalText"
-    >);</span
-    ><br
-     /><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$file</span
-    ><span class="Normal NormalText"
-    > = </span
-    ><span class="Function"
-    >shift</span
-    ><span class="Normal NormalText"
-    >;</span
-    ><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$rdf</span
-    ><span class="Normal NormalText"
-    >  = read_file(</span
-    ><span class="DataType DataType"
-    >$file</span
-    ><span class="Normal NormalText"
-    >);</span
-    ><br
-     /><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$parser</span
-    ><span class="Normal NormalText"
-    > = </span
-    ><span class="Function"
-    >RDF::Trine</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Parser</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Turtle</span
-    ><span class="Normal NormalText"
-    >-&gt;new;</span
-    ><br
-     /><span class="DataType DataType"
-    >$parser</span
-    ><span class="Normal NormalText"
-    >-&gt;</span
-    ><span class="DataType DataType"
-    >parse_into_model</span
-    ><span class="Normal NormalText"
-    >( </span
-    ><span class="DataType DataType"
-    >$BASE</span
-    ><span class="Normal NormalText"
-    >, </span
-    ><span class="DataType DataType"
-    >$rdf</span
-    ><span class="Normal NormalText"
-    >, </span
-    ><span class="DataType DataType"
-    >$model</span
-    ><span class="Normal NormalText"
-    > );</span
-    ><br
-     /></code
-  ></pre
-></div>
-<div class="slide">
-<h1
->SPARQL programmatisch: Graph Patterns</h1
-><pre class="sourceCode Perl"
-><code
-  ><span class="Keyword"
-    >sub </span
-    ><span class="Function"
-    >new_var</span
-    ><span class="Normal NormalText"
-    > {</span
-    ><br
-     /><span class="Normal NormalText"
-    >  </span
-    ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > (</span
-    ><span class="DataType DataType"
-    >$var</span
-    ><span class="Normal NormalText"
-    >) = </span
-    ><span class="DataType DataType"
-    >@_</span
-    ><span class="Normal NormalText"
-    >;</span
-    ><br
-     /><span class="Normal NormalText"
-    >  </span
-    ><span class="Keyword"
-    >return</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="Function"
-    >scalar</span
-    ><br
-     /><span class="Normal NormalText"
-    >      </span
-    ><span class="Function"
-    >RDF::Query</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Node</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Variable</span
-    ><span class="Normal NormalText"
-    >-&gt;new(</span
-    ><span class="DataType DataType"
-    >$var</span
-    ><span class="Normal NormalText"
-    >);</span
-    ><br
-     /><span class="Normal NormalText"
-    >}</span
-    ><br
-     /><br
-     /><span class="Keyword"
-    >sub </span
-    ><span class="Function"
-    >new_triple</span
-    ><span class="Normal NormalText"
-    > {</span
-    ><br
-     /><span class="Normal NormalText"
-    >  </span
-    ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > (</span
-    ><span class="DataType DataType"
-    >$s</span
-    ><span class="Normal NormalText"
-    >, </span
-    ><span class="DataType DataType"
-    >$p</span
-    ><span class="Normal NormalText"
-    >, </span
-    ><span class="DataType DataType"
-    >$o</span
-    ><span class="Normal NormalText"
-    >) = </span
-    ><span class="DataType DataType"
-    >@_</span
-    ><span class="Normal NormalText"
-    >;</span
-    ><br
-     /><span class="Normal NormalText"
-    >  </span
-    ><span class="Keyword"
-    >return</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="Function"
-    >scalar</span
-    ><br
-     /><span class="Normal NormalText"
-    >      new </span
-    ><span class="Function"
-    >RDF::Query</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Algebra</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Triple</span
-    ><span class="Normal NormalText"
-    >(</span
-    ><span class="DataType DataType"
-    >$</span
-    ><span class="Keyword Operator"
-    >s,</span
-    ><span class="Others Pattern"
-    > </span
-    ><span class="DataType DataType"
-    >$p</span
-    ><span class="Keyword Operator"
-    >,</span
-    ><span class="String String(interpolated)"
-    > </span
-    ><span class="DataType DataType"
-    >$o</span
-    ><span class="String String(interpolated)"
-    >)</span
-    ><br
-     /><span class="String String(interpolated)"
-    >}</span
-    ><br
-     /></code
-  ></pre
-></div>
-<div class="slide">
-<h1
->SPARQL programmatisch: Project</h1
-><pre class="sourceCode Perl"
-><code
-  ><span class="Keyword"
-    >sub </span
-    ><span class="Function"
-    >new_basic_project</span
-    ><span class="Normal NormalText"
-    > {</span
-    ><br
-     /><span class="Normal NormalText"
-    >    </span
-    ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > (</span
-    ><span class="DataType DataType"
-    >$patterns</span
-    ><span class="Normal NormalText"
-    >, </span
-    ><span class="DataType DataType"
-    >$result_prop</span
-    ><span class="Normal NormalText"
-    >) = </span
-    ><span class="DataType DataType"
-    >@_</span
-    ><span class="Normal NormalText"
-    >;</span
-    ><br
-     /><span class="Normal NormalText"
-    >    </span
-    ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$bgp</span
-    ><span class="Normal NormalText"
-    > = new</span
-    ><br
-     /><span class="Normal NormalText"
-    >      </span
-    ><span class="Function"
-    >RDF::Query</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Algebra</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >BasicGraphPattern</span
-    ><span class="Normal NormalText"
-    >(</span
-    ><br
-     /><span class="Normal NormalText"
-    >                  </span
-    ><span class="DataType DataType"
-    >@</span
-    ><span class="DataType DataType"
-    >$patterns</span
-    ><span class="Normal NormalText"
-    >);</span
-    ><br
-     /><span class="Normal NormalText"
-    >    </span
-    ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$ggp</span
-    ><span class="Normal NormalText"
-    > = new</span
-    ><br
-     /><span class="Normal NormalText"
-    >      </span
-    ><span class="Function"
-    >RDF::Query</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Algebra</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >GroupGraphPattern</span
-    ><span class="Normal NormalText"
-    >(</span
-    ><span class="DataType DataType"
-    >$</span
-    ><span class="Normal NormalText"
-    >bgp);</span
-    ><br
-     /><span class="Normal NormalText"
-    >    </span
-    ><span class="Keyword"
-    >return</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="Function"
-    >scalar</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="Function"
-    >RDF::Query</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Algebra</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Project</span
-    ><span class="Normal NormalText"
-    >-&gt;new(</span
-    ><br
-     /><span class="Normal NormalText"
-    >                      </span
-    ><span class="DataType DataType"
-    >$ggp</span
-    ><span class="Normal NormalText"
-    >, [new_var(</span
-    ><span class="DataType DataType"
-    >$result_prop</span
-    ><span class="Normal NormalText"
-    >)]);</span
-    ><br
-     /><span class="Normal NormalText"
-    >}</span
-    ><br
-     /></code
-  ></pre
-></div>
-<div class="slide">
-<h1
->SPARQL programmatisch: Project</h1
-><pre class="sourceCode Perl"
-><code
-  ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$p12345</span
-    ><span class="Normal NormalText"
-    >  = </span
-    ><span class="Function"
-    >RDF::Trine</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Node</span
-    ><span class="Normal NormalText"
-    >::</span
-    ><span class="Function"
-    >Resource</span
-    ><span class="Normal NormalText"
-    >-&gt;new(</span
-    ><br
-     /><span class="Normal NormalText"
-    >                  </span
-    ><span class="DataType DataType"
-    >$BASE</span
-    ><span class="Normal NormalText"
-    >.</span
-    ><span class="Keyword Operator"
-    >'</span
-    ><span class="String"
-    >uniprot/P12345</span
-    ><span class="Keyword Operator"
-    >'</span
-    ><span class="Normal NormalText"
-    > );</span
-    ><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$result_prop</span
-    ><span class="Normal NormalText"
-    > = </span
-    ><span class="Keyword Operator"
-    >'</span
-    ><span class="String"
-    >date</span
-    ><span class="Keyword Operator"
-    >'</span
-    ><span class="Normal NormalText"
-    >;</span
-    ><br
-     /><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$patterns</span
-    ><span class="Normal NormalText"
-    > = [ new_triple(</span
-    ><span class="DataType DataType"
-    >$p12345</span
-    ><span class="Normal NormalText"
-    >,</span
-    ><br
-     /><span class="Normal NormalText"
-    >                            </span
-    ><span class="DataType DataType"
-    >$UNIPROT</span
-    ><span class="Normal NormalText"
-    >-&gt;</span
-    ><span class="DataType DataType"
-    >created</span
-    ><span class="Normal NormalText"
-    >,</span
-    ><br
-     /><span class="Normal NormalText"
-    >                            new_var(</span
-    ><span class="DataType DataType"
-    >$result_prop</span
-    ><span class="Normal NormalText"
-    >)) ];</span
-    ><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$project</span
-    ><span class="Normal NormalText"
-    >  = new_basic_project(</span
-    ><span class="DataType DataType"
-    >$patterns</span
-    ><span class="Normal NormalText"
-    >,</span
-    ><br
-     /><span class="Normal NormalText"
-    >                                 </span
-    ><span class="DataType DataType"
-    >$result_prop</span
-    ><span class="Normal NormalText"
-    >);</span
-    ><br
-     /></code
-  ></pre
-></div>
-<div class="slide">
-<h1
->SPARQL programmatisch: Query senden</h1
-><pre class="sourceCode Perl"
-><code
-  ><span class="Comment"
-    ># Manual SELECT will soon be unnecessary.</span
-    ><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$sparql</span
-    ><span class="Normal NormalText"
-    > = </span
-    ><span class="Keyword Operator"
-    >&quot;</span
-    ><span class="String String(interpolated)"
-    >SELECT </span
-    ><span class="Keyword Operator"
-    >&quot;</span
-    ><span class="Normal NormalText"
-    > . </span
-    ><span class="DataType DataType"
-    >$project</span
-    ><span class="Normal NormalText"
-    >-&gt;</span
-    ><span class="DataType DataType"
-    >as_sparql</span
-    ><span class="Normal NormalText"
-    >;</span
-    ><br
-     /><span class="Function"
-    >print</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$sparql</span
-    ><span class="Normal NormalText"
-    >, </span
-    ><span class="Keyword Operator"
-    >&quot;</span
-    ><span class="Char StringSpecialCharacter"
-    >\n\n</span
-    ><span class="Keyword Operator"
-    >&quot;</span
-    ><span class="Normal NormalText"
-    >;</span
-    ><br
-     /><br
-     /><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$results</span
-    ><span class="Normal NormalText"
-    > = new </span
-    ><span class="Function"
-    >RDF::Query</span
-    ><span class="Normal NormalText"
-    >(</span
-    ><span class="DataType DataType"
-    >$</span
-    ><span class="Normal NormalText"
-    >sparql)</span
-    ><br
-     /><span class="Normal NormalText"
-    >                  -&gt;execute( </span
-    ><span class="DataType DataType"
-    >$model</span
-    ><span class="Normal NormalText"
-    > );</span
-    ><br
-     /><span class="Keyword"
-    >while</span
-    ><span class="Normal NormalText"
-    > (</span
-    ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$triple</span
-    ><span class="Normal NormalText"
-    > = </span
-    ><span class="DataType DataType"
-    >$results</span
-    ><span class="Normal NormalText"
-    >-&gt;</span
-    ><span class="DataType DataType"
-    >next</span
-    ><span class="Normal NormalText"
-    >) {</span
-    ><br
-     /><span class="Normal NormalText"
-    >    </span
-    ><span class="Keyword"
-    >my</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="DataType DataType"
-    >$result</span
-    ><span class="Normal NormalText"
-    > = </span
-    ><span class="DataType DataType"
-    >$triple</span
-    ><span class="Normal NormalText"
-    >-&gt;</span
-    ><span class="Normal NormalText"
-    >{ </span
-    ><span class="DataType DataType"
-    >$result_prop</span
-    ><span class="Normal NormalText"
-    > };</span
-    ><br
-     /><span class="Normal NormalText"
-    >    </span
-    ><span class="Function"
-    >print</span
-    ><span class="Normal NormalText"
-    > </span
-    ><span class="Keyword Operator"
-    >&quot;</span
-    ><span class="String String(interpolated)"
-    >--&gt; </span
-    ><span class="Keyword Operator"
-    >&quot;</span
-    ><span class="Normal NormalText"
-    >, </span
-    ><span class="DataType DataType"
-    >$result</span
-    ><span class="Normal NormalText"
-    >, </span
-    ><span class="Keyword Operator"
-    >&quot;</span
-    ><span class="Char StringSpecialCharacter"
-    >\n</span
-    ><span class="Keyword Operator"
-    >&quot;</span
-    ><span class="Normal NormalText"
-    >;</span
-    ><br
-     /><span class="Normal NormalText"
-    >}</span
-    ><br
-     /></code
-  ></pre
-></div>
-<div class="slide">
-<h1
->SPARQL programmatisch: Ergebnis</h1
-><pre
-><code
-  >$ perl make_a_sparql_query.pl testdata/p12345-abbr.tt 
-SELECT * WHERE {
-    &lt;http://purl.uniprot.org/uniprot/P12345&gt;
-        &lt;http://purl.uniprot.org/core/created&gt; ?date .
+><!--
+# SPARQL programmatisch
+
+1. Basic Graph Pattern
+2. Group Graph Pattern
+3. Project
+4. Query
+
+http://github.com/thomas11/perl-rdf-experiments/  
+-> make_a_sparql_query.pl
+
+
+# SPARQL programmatisch: plumbing
+
+~~~~ {.Perl}
+my $BASE    = 'http://purl.uniprot.org/';
+my $UNIPROT = RDF::Trine::Namespace->new('http://purl.uniprot.org/core/');
+
+my $store   = RDF::Trine::Store::Memory->new;
+my $model   = RDF::Trine::Model->new($store);
+
+my $file = shift;
+my $rdf  = read_file($file);
+
+my $parser = RDF::Trine::Parser::Turtle->new;
+$parser->parse_into_model( $BASE, $rdf, $model );
+~~~~
+
+
+# SPARQL programmatisch: Graph Patterns
+
+~~~~ {.Perl}
+sub new_var {
+  my ($var) = @_;
+  return scalar
+      RDF::Query::Node::Variable->new($var);
 }
 
---&gt; &quot;1989-10-01&quot;
-</code
-  ></pre
-></div>
+sub new_triple {
+  my ($s, $p, $o) = @_;
+  return scalar
+      new RDF::Query::Algebra::Triple($s, $p, $o)
+}
+~~~~
+
+
+# SPARQL programmatisch: Project 
+
+~~~~ {.Perl}
+sub new_basic_project {
+    my ($patterns, $result_prop) = @_;
+    my $bgp = new
+      RDF::Query::Algebra::BasicGraphPattern(
+                  @$patterns);
+    my $ggp = new
+      RDF::Query::Algebra::GroupGraphPattern($bgp);
+    return scalar RDF::Query::Algebra::Project->new(
+                      $ggp, [new_var($result_prop)]);
+}
+~~~~
+
+
+# SPARQL programmatisch: Project
+
+~~~~ {.Perl}
+my $p12345  = RDF::Trine::Node::Resource->new(
+                  $BASE.'uniprot/P12345' );
+my $result_prop = 'date';
+
+my $patterns = [ new_triple($p12345,
+                            $UNIPROT->created,
+                            new_var($result_prop)) ];
+my $project  = new_basic_project($patterns,
+                                 $result_prop);
+~~~~
+
+
+# SPARQL programmatisch: Query senden
+
+~~~~ {.Perl}
+# Manual SELECT will soon be unnecessary.
+my $sparql = "SELECT " . $project->as_sparql;
+print $sparql, "\n\n";
+
+my $results = new RDF::Query($sparql)
+                  ->execute( $model );
+while (my $triple = $results->next) {
+    my $result = $triple->{ $result_prop };
+    print "-> ", $result, "\n";
+}
+~~~~
+
+
+# SPARQL programmatisch: Ergebnis
+
+    $ perl make_a_sparql_query.pl testdata/p12345-abbr.tt 
+    SELECT * WHERE {
+        <http://purl.uniprot.org/uniprot/P12345>
+            <http://purl.uniprot.org/core/created> ?date .
+    }
+
+    -> "1989-10-01"
+-->    
+
+</div>
 </div>
 </body>
 </html>

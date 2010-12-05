@@ -1,4 +1,4 @@
-% Praktisches RDF in Perl
+% RDF und Perl
 % Thomas Kappler
 % 2010-06-08
 
@@ -13,10 +13,6 @@
 
 Thomas Kappler
 
-Swiss Institute of Bioinformatics, Genf
-
-Java, Emacs, ... Und jetzt neu: Perl
-
 http://jugglingbits.wordpress.com
 
 
@@ -26,14 +22,16 @@ http://jugglingbits.wordpress.com
   2. Mit RDF arbeiten
     1. Text
     2. Datenbanken
-  4. Weitere Codebeispiele
+<!--  4. Weitere Codebeispiele -->
 
+<!--
 <table>
 <tr> <td>Dieser Vortrag:</td>
      <td>http://github.com/thomas11/perl-rdf-talk</td> </tr>
 <tr> <td>Code:</td>
      <td>http://github.com/thomas11/perl-rdf-experiments</td> </tr>
 </table>
+-->
 
 
 # Was ist das Problem?
@@ -47,13 +45,18 @@ http://jugglingbits.wordpress.com
 \> 50% der Arbeit in der Bioinformatik.
 
 
+# Semantic Web?
+
+Ontologien, Reasoning, ...
+
+Aber RDF allein ist voellig ausreichend!
+
+
 # RDF
 
 <div style='float: right'>
 ![](img/rdf_logo_200.png)
 </div>
-
-Semantic Web? Erst mal reicht RDF für uns Programmierer.
 
 <div style="font-size: 125%; padding: 1em 0 1em 0;">
 Generisches Modell für Daten im Web.
@@ -66,9 +69,9 @@ Generisches Modell für Daten im Web.
 <tr> <td>Dinge beschreiben: </td>
      <td><span style="font-size: 125%;">Subject&mdash;Property&mdash;Object</span></td>
      <td>.</td> </tr>
-<tr class="incremental"> <td>Diese</td>
+<tr class="incremental"> <td></td>
      <td style="text-align: center"><span style="font-size: 125%;">**Tripel**</span></td>
-     <td> sind universal.</td> </tr>
+     <td></td> </tr>
 <tr> <td colspan="2">&nbsp;</td> </tr>
 </table>
 
@@ -85,9 +88,9 @@ Generisches Modell für Daten im Web.
 <tr> <td>Dinge beschreiben: </td>
      <td><span style="font-size: 125%;">Subject&mdash;Property&mdash;Object</span></td>
      <td>.</td> </tr>
-<tr> <td>Diese</td>
+<tr> <td></td>
      <td style="text-align: center"><span style="font-size: 125%;">**Tripel**</span></td>
-     <td> sind universal.</td> </tr>
+     <td></td> </tr>
 <tr> <td colspan="2">Globale Adressierung mit **URIs**.</td> </tr>
 </table>
 
@@ -100,7 +103,7 @@ Generisches Modell für Daten im Web.
 <!-- Wenn die URLs auch funktionieren: *Linked (Open) Data* :-) -->
 
 
-# Linked Open Data
+# Linked (Open) Data
 
 <!-- ![](img/lod-cloud-cropped.png) -->
 <img src="img/lod-cloud-cropped.png" width="550" />
@@ -110,6 +113,30 @@ Richard Cyganiak und Anja Jentzsch, CC by-sa
 </div>
 
 
+# Linked (Open) Data
+
+Linked Data ⋍ Web of Data ⋍ Semantic Web
+
+"The Semantic Web isn't just about putting data on the web. It is
+about making links, so that a person or machine can explore the web of
+data." (Tim Berners-Lee,
+http://www.w3.org/DesignIssues/LinkedData.html)
+
+Silos öffnen.
+
+
+# Linked (Open) Data
+
+1. Use URIs as names for things.
+2. Use HTTP URIs so that people can look up those names.
+3. When someone looks up a URI, provide useful information, using the standards (RDF*, SPARQL)
+4. Include links to other URIs. so that they can discover more things.
+
+<p style="font-size: 75%; text-align: right;">(http://www.w3.org/DesignIssues/LinkedData.html)</p>
+
+“Linked Data is the Semantic Web done right” (Tim Berners-Lee)
+
+
 # Was bringt's?
 
 *Spart Arbeit.*
@@ -117,13 +144,33 @@ Richard Cyganiak und Anja Jentzsch, CC by-sa
   - Datenmodell durch explizite Semantik.
   - Integration durch globale URLs.
 
-<div style="font-size: 125%;">
+<div class="incremental">
+<div style="font-size: 125%; padding-top: 1em;">
 Ergebnis: globales, dezentrales Data Warehouse.
 </div>
 
 <div style="font-size: 75%; text-align: right">
 (frei nach Paul Gordon, Biohackathon Mailing List)
 </div>
+</div>
+
+<div class="incremental" style="padding-top: 1em;">
+Im Idealfall: neue Information *entdecken*.
+</div>
+
+
+# Beispiele
+
+Bioinformatik: www.uniprot.org
+
+Open Government: www.data.gov
+
+Noch nicht besonders "Linked"&mdash;die grosse Herausforderung.
+
+
+# Mit RDF arbeiten
+
+<img src="img/perl-rdf-overview-800.jpg" width="700" />
 
 
 # Serialisierung
@@ -166,12 +213,7 @@ Perl-pragmatisch: `as_hashref`
         uniprot:enzyme  <enzyme/2.6.1.1> .
 
 
-# Mit RDF arbeiten
-
-<img src="img/perl-rdf-overview-800.jpg" width="700" />
-
-
-# Mit RDF arbeiten
+# RDF::Trine
 
 <div style="font-size: 125%; padding: 1em 0 1em 0;">
 **RDF::Trine**: "An RDF Framework for Perl"  
@@ -189,19 +231,18 @@ RDF::Trine::Model
 # Parser und Serialisierer
 
 ~~~~ {.Perl}
-## use File::Slurp, Getopt::Std, strict etc.
 use RDF::Trine;
-# use RDF::Trine:: etc.;
+# use RDF::Trine::Store etc.;
 
 my $base_uri = 'http://purl.uniprot.org/core';
 my $store    = RDF::Trine::Store::Memory->new;
 my $model    = RDF::Trine::Model->new($store);
+# my $model  = RDF::Trine::Model->temporary_model;
  
-## getopts, $file from ARGV etc.
 my $rdf = read_file($file);
 
-my $in_format  = $args{i} || 'rdfxml';
-my $out_format = $args{o} || 'turtle';
+my $in_format  = 'rdfxml';
+my $out_format = 'turtle';
 ~~~~
 
 
@@ -212,14 +253,19 @@ my $parser = RDF::Trine::Parser->new($in_format);
 $parser->parse_into_model($base_uri,
                           $rdf, $model);
 
-warn "Read " . $model->size . " statements.\n";
+say "Read " . $model->size . " statements.";
+~~~~
 
+
+# Parser und Serialisierer
+
+~~~~ {.Perl}
 my $out = RDF::Trine::Serializer->new($out_format);
 print $out->serialize_model_to_string($model);
 ~~~~
 
 
-# Parser und Serializer
+# Parser und Serialisierer
 
     $ perl trine-roundtrip.pl -o turtle p12345.rdf
     Read 3 statements.
@@ -231,10 +277,36 @@ print $out->serialize_model_to_string($model);
         a <http://purl.uniprot.org/core/Protein> .
 
 
+# as_hashref
+
+~~~~ {.Perl}
+my $model_h = $model->as_hashref;
+print Dumper(
+    $model_h->{$uniprot_uri.'/uniprot/P12345'});
+~~~~
+
+
+# as_hashref
+
+~~~~
+$VAR1 = { 'http://purl.uniprot.org/core/created' => [
+            {
+              'value' => '1989-10-01',
+              'type' => 'literal'
+            }
+          ],
+          'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' => [
+            {
+              'value' => 'http://purl.uniprot.org/core/Protein',
+              'type' => 'uri'
+            }
+          ],
+~~~~
+
+
 # Mehr als nur Dateien
 
-<ul>
-  <li>Datenbank</li>
+Datenbanken
     <ul>
       <li>**Triple Stores**</li>
         <ul> <li>4store</li> <li>Virtuoso</li> <li>...</li> </ul>
@@ -242,8 +314,7 @@ print $out->serialize_model_to_string($model);
         <ul> <li>In-Memory</li> <li>SQL</li> <li>...</li></ul>
     </ul>
 
-  <li>Abfragesprache: **SPARQL**</li>
-</ul>
+Abfragesprache: **SPARQL**
 
 
 # SPARQL
@@ -267,6 +338,15 @@ Wann wurde P12345 angelegt?
 
 # RDF::Query
 
+<div style="font-size: 125%; padding: 1em 0 1em 0;">
+**RDF::Query**: "An RDF query implementation of SPARQL/RDQL in Perl for use with RDF::Trine." 
+</div>
+ 
+von... Gregory Williams.
+
+
+# RDF::Query
+
 ~~~~ {.Perl}
 my $query = new RDF::Query ( $sparql );
 my result = $query->execute( $model );
@@ -279,7 +359,7 @@ while (my $row = $result->next) {
 
 # RDF::Query
 
-Programmatisch: siehe Extras. Kostprobe:
+Kostprobe programmatisch:
 
 ~~~~ {.Perl}
 my $object = new_var($prop);
@@ -293,8 +373,8 @@ my $bgp = new
 
 # Integration
 
-<table cellspacing="20">
-  <tr> <td>Perl-Code</td>    <td>Graph <-> Hash</td>    <td>Trine::Model</td> </tr>
+<table cellspacing="30">
+  <tr> <td>Perl Code</td>    <td>Graph <-> Hash</td>    <td>Trine::Model</td> </tr>
   <tr> <td>Datenbank</td>    <td>Tripel relational</td> <td>Trine::Store</td> </tr>
   <tr> <td>Webanwendung</td> <td>JSON</td>              <td>Trine::{Serialiser,Parser}</td> </tr>
   <tr> <td></td>             <td>RDF bereitstellen</td> <td>Trine::{Serialiser,Parser}</td> </tr>
@@ -315,7 +395,7 @@ my $bgp = new
 
 RDF mit Perl: voll unterstützt.
 
-Extras kommen: Catalyst-Modell, RDF::LinkedData, XS.
+In Arbeit: Catalyst-Modell, RDF::LinkedData, XS.
 
 **The Perl RDF Project**: http://www.perlrdf.org
 
@@ -326,14 +406,20 @@ Extras kommen: Catalyst-Modell, RDF::LinkedData, XS.
      <td>http://github.com/thomas11/perl-rdf-experiments</td> </tr>
 </table>
 
+
 # Danke an
 
-**Greg Williams**, Toby Inkster, Kjetil Kjernsmo et al.:  
+**Greg Williams**, Kjetil Kjernsmo, Toby Inkster, et al.:  
 *The Perl RDF Project*
 
 Toshiaki Katayama, DBCLS, CBRC: Biohackathon Tokyo
 
-Swiss-Prot/SIB: mein Konferenzbesuch
+<table>
+<tr> <td>Dieser Vortrag:</td>
+     <td>http://github.com/thomas11/perl-rdf-talk</td> </tr>
+<tr> <td>Code:</td>
+     <td>http://github.com/thomas11/perl-rdf-experiments</td> </tr>
+</table>
 
 
 # Mehr Code: Übersicht
@@ -414,14 +500,11 @@ my @stmts = (
 # RDF selbst gemacht, 4: Model
 
 ~~~~ {.Perl}
-my $model = RDF::Trine::Model->new(
-              RDF::Trine::Store::Memory->new );
-foreach my $stmt (@stmts) {
-    $model->add_statement($stmt);
-}
+my $model = RDF::Trine::Model->temporary_model;
+$model->add_statement($_) for @stmts;
 
 my $serializer =
-  RDF::Trine::Serializer->new( 'turtle' );
+  RDF::Trine::Serializer::Turtle->new;
 print $serializer->
   serialize_model_to_string($model), "\n";
 ~~~~
@@ -438,6 +521,7 @@ print $serializer->
 	a <http://purl.uniprot.org/core/Protein> .
 
 
+<!--
 # SPARQL programmatisch
 
 1. Basic Graph Pattern
@@ -525,7 +609,7 @@ my $results = new RDF::Query($sparql)
                   ->execute( $model );
 while (my $triple = $results->next) {
     my $result = $triple->{ $result_prop };
-    print "--> ", $result, "\n";
+    print "-> ", $result, "\n";
 }
 ~~~~
 
@@ -538,5 +622,5 @@ while (my $triple = $results->next) {
             <http://purl.uniprot.org/core/created> ?date .
     }
 
-    --> "1989-10-01"
-    
+    -> "1989-10-01"
+-->    
