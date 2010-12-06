@@ -351,7 +351,7 @@ by... Gregory Williams.
 
 ~~~~ {.Perl}
 my $query = new RDF::Query ( $sparql );
-my result = $query->execute( $model );
+my $result = $query->execute( $model );
 
 while (my $row = $result->next) {
     print $row->{ date }->as_string;
